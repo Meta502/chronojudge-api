@@ -1,5 +1,6 @@
 import fastify from "fastify";
 import router from "./router";
+import cors from "fastify-cors";
 
 const server = fastify({
   // Logger only for production
@@ -8,5 +9,6 @@ const server = fastify({
 
 // Middleware: Router
 server.register(router);
+server.register(cors);
 
 export default server;

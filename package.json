@@ -14,7 +14,8 @@
   "dependencies": {
     "compile-run": "^2.3.4",
     "cross-env": "^7.0.3",
-    "fastify": "^3.21.0"
+    "fastify": "^3.21.0",
+    "fastify-cors": "^6.0.2"
   },
   "devDependencies": {
     "@types/node": "latest",
