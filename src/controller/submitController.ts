@@ -36,6 +36,7 @@ export default async function submitController(fastify: FastifyInstance) {
       // @ts-ignore
       const { code, input, output } = _request.body;
       const startTime = Date.now();
+
       const runCode = await java
         .runSource(code, { compileTimeout: 10000, stdin: input, timeout: 2000 })
         .then((result) => {
