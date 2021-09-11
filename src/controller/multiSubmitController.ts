@@ -1,12 +1,57 @@
+import { execSync } from "child_process";
+import { spawn } from "promisify-child-process";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { java } from "compile-run";
-import { removeTrailing } from "./submitController";
-
+// import { java } from "compile-run";
+// import { removeTrailing } from "./submitController";
+import fs from "fs";
+import { customAlphabet } from "nanoid";
 export interface SubmissionBody {
   code: string;
   input: string[];
   output: string[];
 }
+import path from "path";
+import { removeTrailing } from "./submitController";
+
+function renameClassUtil(
+  code: string,
+  newClassName: string,
+  targetSubstring: string
+) {
+  let newCode = "";
+  for (let i = 0; i < code.length; ++i) {
+    if (code.substring(i, targetSubstring.length + i) === targetSubstring) {
+      let beforeCode = code.slice(0, i);
+      let tempCode = code.slice(i, code.length);
+      let afterCode = tempCode.slice(tempCode.search("{"), tempCode.length);
+      newCode = beforeCode + targetSubstring + newClassName + " " + afterCode;
+      break;
+    }
+  }
+  return newCode;
+}
+
+function renameClass(code: string, newClassName: string) {
+  let newCode = renameClassUtil(code, newClassName, "\r\npublic class ");
+  if (newCode === "")
+    newCode = renameClassUtil(code, newClassName, "\npublic class ");
+  if (newCode === "")
+    newCode = renameClassUtil(code, newClassName, "\rpublic class ");
+  if (newCode === "")
+    newCode = renameClassUtil(code, newClassName, "public class ");
+  return newCode;
+}
+
+const runCode = async (filePath: string, randomId: string, input: string) => {
+  const child = spawn(`java`, ["-cp", `${filePath}`, `${randomId}`], {
+    encoding: "utf-8",
+  });
+
+  child?.stdin?.write(input);
+  child?.stdin?.end();
+
+  return child;
+};
 
 export default async function multiSubmitController(fastify: FastifyInstance) {
   // GET /
@@ -28,41 +73,52 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
         return;
       }
 
-      const outputs: any[] = [];
-      let index = 0;
+      const randomId = customAlphabet(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+        16
+      )();
 
-      for (const inp of input) {
-        const out = await java
-          .runSource(code, {
-            compileTimeout: 10000,
-            stdin: inp,
-            timeout: 2000,
-          })
-          .then((result) => {
-            switch (result.errorType) {
-              case "compile-time":
-                return {
-                  message: "An error occurred during compilation",
-                  output: result,
-                };
-              case "run-time":
-                return {
-                  message: "RTE",
-                  output: result,
-                };
-            }
-            if (
-              removeTrailing(result.stdout) === removeTrailing(output[index])
-            ) {
-              return { message: "AC", output: result };
-            } else {
-              return { message: "WA", output: result };
-            }
-          });
-        outputs.push(out);
-        index++;
+      const processedCode = renameClass(code, randomId);
+
+      const filePath = path.resolve("temp");
+
+      fs.writeFileSync(`${filePath}/${randomId}.java`, processedCode);
+
+      // Compile Java file and delete source code.
+      try {
+        execSync(`javac ${filePath}/${randomId}.java`);
+      } catch (error) {
+        reply.send([
+          {
+            message: "CLE",
+          },
+        ]);
+        return;
+      } finally {
+        fs.unlinkSync(`${filePath}/${randomId}.java`);
       }
-      reply.send(outputs);
+
+      const outputs = input.map((item) => runCode(filePath, randomId, item));
+
+      Promise.all(outputs).then((outputs) => {
+        const results = outputs.map((item, index: number) => {
+          if (
+            removeTrailing(String(item.stdout)) ===
+            removeTrailing(output[index])
+          ) {
+            return {
+              message: "AC",
+              output: item,
+            };
+          } else {
+            return {
+              message: "WA",
+              output: item,
+            };
+          }
+        });
+        reply.send(results);
+      });
     }
   );
 }
