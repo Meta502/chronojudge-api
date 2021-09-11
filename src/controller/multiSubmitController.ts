@@ -117,7 +117,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
                 message: "RTE",
                 output: item,
               };
-            } else if (item?.code === 243) {
+            } else if (item?.code === 143) {
               return {
                 message: "TLE",
                 output: item,
