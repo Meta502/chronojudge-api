@@ -50,7 +50,7 @@ const runCode = async (filePath: string, randomId: string, input: string) => {
   child?.stdin?.write(input);
   child?.stdin?.end();
 
-  return child;
+  return child.catch((e) => e);
 };
 
 export default async function multiSubmitController(fastify: FastifyInstance) {
@@ -84,7 +84,6 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
 
       fs.writeFileSync(`${filePath}/${randomId}.java`, processedCode);
 
-      // Compile Java file and delete source code.
       try {
         execSync(`javac ${filePath}/${randomId}.java`);
       } catch (error) {
@@ -102,8 +101,13 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
 
       Promise.all(outputs).then((outputs) => {
         const results = outputs.map((item, index: number) => {
-          if (
-            removeTrailing(String(item.stdout)) ===
+          if (item?.stderr) {
+            return {
+              message: "RTE",
+              output: item,
+            };
+          } else if (
+            removeTrailing(String(item?.stdout)) ===
             removeTrailing(output[index])
           ) {
             return {
