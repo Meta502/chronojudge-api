@@ -11,6 +11,7 @@ export interface SubmissionBody {
   code: string;
   input: string[];
   output: string[];
+  timeLimit: number;
 }
 import path from "path";
 import { removeTrailing } from "./submitController";
@@ -44,15 +45,19 @@ function renameClass(code: string, newClassName: string) {
   return newCode;
 }
 
-const runCode = async (filePath: string, randomId: string, input: string) => {
+const runCode = async (
+  filePath: string,
+  randomId: string,
+  input: string,
+  timeLimit: number
+) => {
   const child = spawn(`java`, ["-cp", `${filePath}`, `${randomId}`], {
     encoding: "utf-8",
-    killSignal: "SIGKILL",
   });
 
   const timeout = setTimeout(() => {
     child.kill();
-  }, 5000);
+  }, timeLimit);
 
   child?.stdin?.write(input);
   child?.stdin?.end();
@@ -72,7 +77,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       reply: FastifyReply
     ) {
       // @ts-ignore
-      const { code, input, output } = _request.body;
+      const { code, input, output, timeLimit } = _request.body;
 
       if (!code.length) {
         reply.status(200).send([
@@ -100,6 +105,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
         reply.send([
           {
             message: "CLE",
+            output: error,
           },
         ]);
         return;
@@ -107,41 +113,40 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
         fs.unlinkSync(`${filePath}/${randomId}.java`);
       }
 
-      const outputs = input.map((item) => runCode(filePath, randomId, item));
+      const outputs = [];
 
-      Promise.all(outputs)
-        .then((outputs) => {
-          const results = outputs.map((item, index: number) => {
-            if (item?.stderr) {
-              return {
-                message: "RTE",
-                output: item,
-              };
-            } else if (item?.code === 143) {
-              return {
-                message: "TLE",
-                output: item,
-              };
-            } else if (
-              removeTrailing(String(item?.stdout)) ===
-              removeTrailing(output[index])
-            ) {
-              return {
-                message: "AC",
-                output: item,
-              };
-            } else {
-              return {
-                message: "WA",
-                output: item,
-              };
-            }
-          });
-          reply.send(results);
-        })
-        .finally(() => {
-          findRemoveSync("temp", { prefix: randomId });
-        });
+      for (const inp of input) {
+        const output = await runCode(filePath, randomId, inp, timeLimit);
+        outputs.push(output);
+      }
+
+      const results = outputs.map((item, index: number) => {
+        if (item?.stderr) {
+          return {
+            message: "RTE",
+            output: item,
+          };
+        } else if (item?.code === 143) {
+          return {
+            message: "TLE",
+            output: item,
+          };
+        } else if (
+          removeTrailing(String(item?.stdout)) === removeTrailing(output[index])
+        ) {
+          return {
+            message: "AC",
+            output: item,
+          };
+        } else {
+          return {
+            message: "WA",
+            output: item,
+          };
+        }
+      });
+      reply.send(results);
+      findRemoveSync("temp", { prefix: randomId });
     }
   );
 }
