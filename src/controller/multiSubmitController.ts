@@ -1,6 +1,8 @@
 import { execSync } from "child_process";
 import { spawn } from "promisify-child-process";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import findRemoveSync from "find-remove";
+
 // import { java } from "compile-run";
 // import { removeTrailing } from "./submitController";
 import fs from "fs";
@@ -45,10 +47,18 @@ function renameClass(code: string, newClassName: string) {
 const runCode = async (filePath: string, randomId: string, input: string) => {
   const child = spawn(`java`, ["-cp", `${filePath}`, `${randomId}`], {
     encoding: "utf-8",
+    killSignal: "SIGKILL",
   });
+
+  const timeout = setTimeout(() => {
+    child.kill();
+  }, 5000);
 
   child?.stdin?.write(input);
   child?.stdin?.end();
+  child?.on("close", () => {
+    clearTimeout(timeout);
+  });
 
   return child.catch((e) => e);
 };
@@ -99,30 +109,34 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
 
       const outputs = input.map((item) => runCode(filePath, randomId, item));
 
-      Promise.all(outputs).then((outputs) => {
-        const results = outputs.map((item, index: number) => {
-          if (item?.stderr) {
-            return {
-              message: "RTE",
-              output: item,
-            };
-          } else if (
-            removeTrailing(String(item?.stdout)) ===
-            removeTrailing(output[index])
-          ) {
-            return {
-              message: "AC",
-              output: item,
-            };
-          } else {
-            return {
-              message: "WA",
-              output: item,
-            };
-          }
+      Promise.all(outputs)
+        .then((outputs) => {
+          const results = outputs.map((item, index: number) => {
+            if (item?.stderr) {
+              return {
+                message: "RTE",
+                output: item,
+              };
+            } else if (
+              removeTrailing(String(item?.stdout)) ===
+              removeTrailing(output[index])
+            ) {
+              return {
+                message: "AC",
+                output: item,
+              };
+            } else {
+              return {
+                message: "WA",
+                output: item,
+              };
+            }
+          });
+          reply.send(results);
+        })
+        .finally(() => {
+          findRemoveSync("temp", { prefix: randomId });
         });
-        reply.send(results);
-      });
     }
   );
 }

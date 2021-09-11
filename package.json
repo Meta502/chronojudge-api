@@ -16,10 +16,12 @@
     "cross-env": "^7.0.3",
     "fastify": "^3.21.0",
     "fastify-cors": "^6.0.2",
+    "find-remove": "^3.1.0",
     "nanoid": "^3.1.25",
     "promisify-child-process": "^4.1.1"
   },
   "devDependencies": {
+    "@types/find-remove": "^2.0.1",
     "@types/node": "latest",
     "fastify-tsconfig": "^1.0.1",
     "nodemon": "^2.0.12",
