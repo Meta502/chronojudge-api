@@ -19,18 +19,23 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       // @ts-ignore
       const { code, input, output } = _request.body;
 
-      if (!code.length)
+      if (!code.length) {
         reply.status(200).send([
           {
             message: "You did not enter a program.",
           },
         ]);
+        return;
+      }
 
-      const processes = input.map((item: any, index: number) => {
-        return java
+      const outputs: any[] = [];
+      let index = 0;
+
+      for (const inp of input) {
+        const out = await java
           .runSource(code, {
             compileTimeout: 10000,
-            stdin: item,
+            stdin: inp,
             timeout: 2000,
           })
           .then((result) => {
@@ -54,11 +59,10 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
               return { message: "WA", output: result };
             }
           });
-      });
-
-      Promise.all(processes).then((item) => {
-        reply.status(200).send(item);
-      });
+        outputs.push(out);
+        index++;
+      }
+      reply.send(outputs);
     }
   );
 }
