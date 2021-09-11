@@ -37,6 +37,10 @@ export default async function submitController(fastify: FastifyInstance) {
       const { code, input, output } = _request.body;
       const startTime = Date.now();
 
+      if (!code)
+        reply.status(200).send({
+          message: "You did not enter your code!",
+        });
       const runCode = await java
         .runSource(code, { compileTimeout: 10000, stdin: input, timeout: 2000 })
         .then((result) => {

@@ -19,6 +19,13 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       // @ts-ignore
       const { code, input, output } = _request.body;
 
+      if (!code.length)
+        reply.status(200).send([
+          {
+            message: "You did not enter a program.",
+          },
+        ]);
+
       const processes = input.map((item: any, index: number) => {
         return java
           .runSource(code, {
