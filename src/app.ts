@@ -1,6 +1,10 @@
 import fastify from "fastify";
+
 import router from "./router";
 import cors from "fastify-cors";
+import socketio from "fastify-socket.io";
+
+import osUtils from "node-os-utils";
 
 const server = fastify({
   // Logger only for production
@@ -10,5 +14,24 @@ const server = fastify({
 // Middleware: Router
 server.register(router);
 server.register(cors);
+server.register(socketio, {
+  path: "/status",
+  cors: {
+    origin: "*",
+  },
+});
+
+server.ready((err) => {
+  if (err) throw err;
+  server.io.on("connection", (socket) => {
+    socket.on("get-status", async () => {
+      const cpuUsage = await osUtils.cpu.usage();
+      socket.emit("status", {
+        status: "Alive",
+        cpuUsage: cpuUsage,
+      });
+    });
+  });
+});
 
 export default server;
