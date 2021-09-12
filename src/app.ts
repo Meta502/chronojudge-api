@@ -6,6 +6,10 @@ import socketio from "fastify-socket.io";
 
 import osUtils from "node-os-utils";
 
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const server = fastify({
   // Logger only for production
   logger: !!(process.env.NODE_ENV !== "development"),
@@ -15,7 +19,7 @@ const server = fastify({
 server.register(router);
 server.register(cors);
 server.register(socketio, {
-  path: "/status",
+  path: process.env.SOCKET_IO_PATH,
   cors: {
     origin: "*",
   },
