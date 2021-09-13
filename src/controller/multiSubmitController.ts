@@ -42,6 +42,7 @@ function renameClass(code: string, newClassName: string) {
     newCode = renameClassUtil(code, newClassName, "\rpublic class ");
   if (newCode === "")
     newCode = renameClassUtil(code, newClassName, "public class ");
+
   return newCode;
 }
 
@@ -61,6 +62,7 @@ const runCode = async (
 
   child?.stdin?.write(input);
   child?.stdin?.end();
+
   child?.on("close", () => {
     clearTimeout(timeout);
   });
@@ -121,27 +123,30 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       }
 
       const results = outputs.map((item, index: number) => {
+        const strippedOutput = removeTrailing(output[index]);
         if (item?.stderr) {
           return {
             message: "RTE",
-            output: item,
+            output: { ...item, stdout: removeTrailing(String(item?.stdout)) },
           };
         } else if (item?.code === 143) {
           return {
             message: "TLE",
-            output: item,
+            output: { ...item, stdout: removeTrailing(String(item?.stdout)) },
           };
-        } else if (
-          removeTrailing(String(item?.stdout)) === removeTrailing(output[index])
-        ) {
+        } else if (removeTrailing(String(item?.stdout)) === strippedOutput) {
           return {
             message: "AC",
-            output: item,
+            output: { ...item, stdout: removeTrailing(String(item?.stdout)) },
           };
         } else {
           return {
             message: "WA",
-            output: item,
+            output: {
+              ...item,
+              stdout: removeTrailing(String(item?.stdout)),
+              output: strippedOutput,
+            },
           };
         }
       });
