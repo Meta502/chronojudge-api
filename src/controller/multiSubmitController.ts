@@ -16,7 +16,7 @@ export interface SubmissionBody {
 import path from "path";
 import { removeTrailing } from "./submitController";
 
-function renameClassUtil(
+export function renameClassUtil(
   code: string,
   newClassName: string,
   targetSubstring: string
@@ -34,7 +34,7 @@ function renameClassUtil(
   return newCode;
 }
 
-function renameClass(code: string, newClassName: string) {
+export function renameClass(code: string, newClassName: string) {
   let newCode = renameClassUtil(code, newClassName, "\r\npublic class ");
   if (newCode === "")
     newCode = renameClassUtil(code, newClassName, "\npublic class ");
@@ -46,7 +46,7 @@ function renameClass(code: string, newClassName: string) {
   return newCode;
 }
 
-const runCode = async (
+export const runCode = async (
   filePath: string,
   randomId: string,
   input: string,
@@ -54,6 +54,7 @@ const runCode = async (
 ) => {
   const child = spawn(`java`, ["-cp", `${filePath}`, `${randomId}`], {
     encoding: "utf-8",
+    maxBuffer: 512000,
   });
 
   const timeout = setTimeout(() => {

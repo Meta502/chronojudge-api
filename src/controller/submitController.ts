@@ -1,5 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { java } from "compile-run";
+import { customAlphabet } from "nanoid";
+import { renameClass, runCode } from "./multiSubmitController";
+import path from "path";
+import fs from "fs";
+import { execSync } from "child_process";
 
 export interface SubmissionBody {
   code: string;
@@ -35,7 +39,6 @@ export default async function submitController(fastify: FastifyInstance) {
     ) {
       // @ts-ignore
       const { code, input, output } = _request.body;
-      const startTime = Date.now();
 
       if (!code.length) {
         reply.status(200).send({
@@ -43,34 +46,61 @@ export default async function submitController(fastify: FastifyInstance) {
         });
         return;
       }
+      if (code.search("public class") === -1) {
+        reply.status(200).send([
+          {
+            message: "CLE: Your program does not have a public class.",
+          },
+        ]);
+        return;
+      }
 
-      const runCode = await java
-        .runSource(code, { compileTimeout: 10000, stdin: input, timeout: 2000 })
-        .then((result) => {
-          const delta = Date.now() - startTime;
-          return { ...result, time: delta };
-        });
+      const randomId = customAlphabet(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+        16
+      )();
 
-      switch (runCode.errorType) {
+      const processedCode = renameClass(code, randomId);
+      const filePath = path.resolve("temp");
+
+      fs.writeFileSync(`${filePath}/${randomId}.java`, processedCode);
+
+      try {
+        execSync(`javac ${filePath}/${randomId}.java`);
+      } catch (error) {
+        reply.send([
+          {
+            message: "CLE",
+            output: error,
+          },
+        ]);
+        return;
+      } finally {
+        fs.unlinkSync(`${filePath}/${randomId}.java`);
+      }
+
+      const codeOutput = await runCode(filePath, randomId, input, 2000);
+
+      switch (codeOutput.errorType) {
         case "compile-time":
           reply.status(200).send({
             message: "An error occurred during compilation",
-            output: runCode,
+            output: codeOutput,
           });
           return;
         case "run-time":
           reply.status(200).send({
             message: "RTE",
-            output: runCode,
+            output: codeOutput,
           });
           return;
       }
-      if (removeTrailing(runCode.stdout) === removeTrailing(output)) {
-        reply.status(200).send({ message: "AC", output: runCode });
-      } else if (runCode.stdout === "" && runCode.stderr == "") {
-        reply.status(200).send({ message: "TLE", output: runCode });
+      if (removeTrailing(codeOutput.stdout) === removeTrailing(output)) {
+        reply.status(200).send({ message: "AC", output: codeOutput });
+      } else if (codeOutput.stdout === "" && codeOutput.stderr == "") {
+        reply.status(200).send({ message: "TLE", output: codeOutput });
       } else {
-        reply.status(200).send({ message: "WA", output: runCode });
+        reply.status(200).send({ message: "WA", output: codeOutput });
       }
     }
   );
