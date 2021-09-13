@@ -65,10 +65,12 @@ export default async function submitController(fastify: FastifyInstance) {
 
       try {
         execSync(`javac ${filePath}/${randomId}.java`);
-      } catch (error) {
+      } catch (error: any) {
         reply.send({
           message: "CLE",
-          output: error,
+          output: {
+            stderr: error.toString(),
+          },
         });
         return;
       } finally {
