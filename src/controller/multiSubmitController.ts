@@ -89,6 +89,14 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
         ]);
         return;
       }
+      if (code.search("public class") === -1) {
+        reply.status(200).send([
+          {
+            message: "CLE: Your program does not have a public class.",
+          },
+        ]);
+        return;
+      }
 
       const randomId = customAlphabet(
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
