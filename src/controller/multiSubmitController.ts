@@ -137,7 +137,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       const outputs = [];
 
       for (const inp of input) {
-        const output = await runCode(filePath, randomId, inp, timeLimit);
+        const output = await runCode(filePath, randomId, inp, 10000);
         outputs.push(output);
       }
 
@@ -154,7 +154,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
           };
         } else if (item?.code === 143) {
           return {
-            message: "TLE",
+            message: "TLE (Judge might be overloaded)",
             output: { ...item, stdout: removeTrailing(String(item?.stdout)) },
           };
         } else if (removeTrailing(String(item?.stdout)) === strippedOutput) {
