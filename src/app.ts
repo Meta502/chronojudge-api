@@ -4,9 +4,8 @@ import router from "./router";
 import cors from "fastify-cors";
 import socketio from "fastify-socket.io";
 
-import osUtils from "node-os-utils";
-
 import dotenv from "dotenv";
+import socketController from "./controller/socketController";
 
 dotenv.config();
 
@@ -29,24 +28,12 @@ server.register(socketio, {
 server.ready((err) => {
   if (err) throw err;
   server.io.on("connection", (socket) => {
-    socket.on("get-status", async () => {
-      const cpuUsage = await osUtils.cpu.usage();
-      switch (cpuUsage < 75) {
-        case true:
-          socket.emit("status", {
-            status: "Alive",
-            cpuUsage: cpuUsage,
-          });
-          break;
-        case false:
-          socket.emit("status", {
-            status: "High Load",
-            cpuUsage: cpuUsage,
-          });
-          break;
-      }
-    });
+    socketController(socket);
   });
+});
+
+process.on("uncaughtException", () => {
+  console.error("A Java exception might have occurred.");
 });
 
 export default server;

@@ -12,6 +12,7 @@
   "author": "Matschik <mathieu.schimmerling@protonmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/socket.io": "^3.0.2",
     "compile-run": "^2.3.4",
     "cross-env": "^7.0.3",
     "diff": "^5.0.0",
