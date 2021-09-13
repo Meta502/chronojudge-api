@@ -25,13 +25,13 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       // @ts-ignore
       const { code, input, output, timeLimit } = _request.body;
 
-      if (!precompileCheck(code, reply)) {
+      if (!precompileCheck(code, reply, true)) {
         return;
       }
 
       const { randomId, filePath } = processCode(code);
 
-      if (!compileCode(filePath, randomId, reply)) {
+      if (!compileCode(filePath, randomId, reply, true)) {
         return;
       }
 

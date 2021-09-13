@@ -24,7 +24,7 @@ export default async function submitController(fastify: FastifyInstance) {
       // @ts-ignore
       const { code, input, output } = _request.body;
 
-      if (!precompileCheck(code, reply)) {
+      if (!precompileCheck(code, reply, false)) {
         return;
       }
 

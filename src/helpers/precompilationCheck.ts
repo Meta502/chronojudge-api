@@ -1,20 +1,22 @@
 import { FastifyReply } from "fastify";
 
-const precompileCheck = (code: string, reply: FastifyReply) => {
+const precompileCheck = (
+  code: string,
+  reply: FastifyReply,
+  multiSubmit: boolean
+) => {
   if (!code.length) {
-    reply.status(200).send([
-      {
-        message: "You did not enter a program.",
-      },
-    ]);
+    const message = {
+      message: "You did not enter a program.",
+    };
+    reply.status(200).send(multiSubmit ? [message] : message);
     return false;
   }
   if (code.search("public class") === -1) {
-    reply.status(200).send([
-      {
-        message: "CLE: Your program does not have a public class.",
-      },
-    ]);
+    const message = {
+      message: "CLE: Your program does not have a public class.",
+    };
+    reply.status(200).send(multiSubmit ? [message] : message);
     return false;
   }
   return true;
