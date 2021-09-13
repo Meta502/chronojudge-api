@@ -31,10 +31,18 @@ server.ready((err) => {
   server.io.on("connection", (socket) => {
     socket.on("get-status", async () => {
       const cpuUsage = await osUtils.cpu.usage();
-      socket.emit("status", {
-        status: "Alive",
-        cpuUsage: cpuUsage,
-      });
+      switch (cpuUsage < 75) {
+        case true:
+          socket.emit("status", {
+            status: "Alive",
+            cpuUsage: cpuUsage,
+          });
+        case false:
+          socket.emit("status", {
+            status: "High Load",
+            cpuUsage: cpuUsage,
+          });
+      }
     });
   });
 });
