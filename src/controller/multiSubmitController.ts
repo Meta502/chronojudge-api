@@ -163,6 +163,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
               ...item,
               stdout: removeTrailing(String(item?.stdout)),
               output: strippedOutput,
+              input: input[index],
             },
           };
         }
