@@ -61,6 +61,14 @@ export const runCode = async (
     child.kill();
   }, timeLimit);
 
+  child?.on("error", (err) => {
+    console.error(err);
+  });
+
+  process.on("uncaughtException", () => {
+    console.error("COMPILATION ERROR OCCURRED");
+  });
+
   child?.stdin?.write(input);
   child?.stdin?.end();
 
