@@ -120,11 +120,13 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
 
       try {
         execSync(`javac ${filePath}/${randomId}.java`);
-      } catch (error) {
+      } catch (error: any) {
         reply.send([
           {
             message: "CLE",
-            output: error,
+            output: {
+              stderr: error.toString(),
+            },
           },
         ]);
         return;
@@ -144,7 +146,11 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
         if (item?.stderr) {
           return {
             message: "RTE",
-            output: { ...item, stdout: removeTrailing(String(item?.stdout)) },
+            output: {
+              ...item,
+              stdout: removeTrailing(String(item?.stdout)),
+              input: input[index],
+            },
           };
         } else if (item?.code === 143) {
           return {
