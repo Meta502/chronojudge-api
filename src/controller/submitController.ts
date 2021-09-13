@@ -4,6 +4,7 @@ import { renameClass, runCode } from "./multiSubmitController";
 import path from "path";
 import fs from "fs";
 import { execSync } from "child_process";
+import findRemoveSync from "find-remove";
 
 export interface SubmissionBody {
   code: string;
@@ -77,7 +78,11 @@ export default async function submitController(fastify: FastifyInstance) {
         fs.unlinkSync(`${filePath}/${randomId}.java`);
       }
 
-      const codeOutput = await runCode(filePath, randomId, input, 2000);
+      const codeOutput = await runCode(filePath, randomId, input, 2000).finally(
+        () => {
+          findRemoveSync("temp", { prefix: randomId });
+        }
+      );
 
       switch (codeOutput.errorType) {
         case "compile-time":

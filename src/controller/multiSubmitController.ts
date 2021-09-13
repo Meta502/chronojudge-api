@@ -52,10 +52,14 @@ export const runCode = async (
   input: string,
   timeLimit: number
 ) => {
-  const child = spawn(`java`, ["-cp", `${filePath}`, `${randomId}`], {
-    encoding: "utf-8",
-    maxBuffer: 512000,
-  });
+  const child = spawn(
+    `java`,
+    ["-XX:ActiveProcessorCount=1", "-cp", `${filePath}`, `${randomId}`],
+    {
+      encoding: "utf-8",
+      maxBuffer: 512000,
+    }
+  );
 
   const timeout = setTimeout(() => {
     child.kill();
@@ -154,7 +158,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
           };
         } else if (item?.code === 143) {
           return {
-            message: "TLE (Judge might be overloaded)",
+            message: "TLE (website might be overloaded)",
             output: { ...item, stdout: removeTrailing(String(item?.stdout)) },
           };
         } else if (removeTrailing(String(item?.stdout)) === strippedOutput) {
