@@ -47,11 +47,9 @@ export default async function submitController(fastify: FastifyInstance) {
         return;
       }
       if (code.search("public class") === -1) {
-        reply.status(200).send([
-          {
-            message: "CLE: Your program does not have a public class.",
-          },
-        ]);
+        reply.status(200).send({
+          message: "CLE: Your program does not have a public class.",
+        });
         return;
       }
 
@@ -68,12 +66,10 @@ export default async function submitController(fastify: FastifyInstance) {
       try {
         execSync(`javac ${filePath}/${randomId}.java`);
       } catch (error) {
-        reply.send([
-          {
-            message: "CLE",
-            output: error,
-          },
-        ]);
+        reply.send({
+          message: "CLE",
+          output: error,
+        });
         return;
       } finally {
         fs.unlinkSync(`${filePath}/${randomId}.java`);
