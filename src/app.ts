@@ -37,11 +37,13 @@ server.ready((err) => {
             status: "Alive",
             cpuUsage: cpuUsage,
           });
+          break;
         case false:
           socket.emit("status", {
             status: "High Load",
             cpuUsage: cpuUsage,
           });
+          break;
       }
     });
   });
