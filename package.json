@@ -17,7 +17,7 @@
     "cross-env": "^7.0.3",
     "diff": "^5.0.0",
     "dotenv": "^10.0.0",
-    "fastify": "^3.21.0",
+    "fastify": "^3.21.1",
     "fastify-cors": "^6.0.2",
     "fastify-socket.io": "^2.0.1",
     "find-remove": "^3.1.0",
