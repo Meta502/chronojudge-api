@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  chronojudge-api:
+    container_name: chronojudge-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./
+        target: /app/chronojudge-api
+    ports:
+      - 3006:3006
+    environment:
+      - COMPOSE_CONVERT_WINDOWS_PATHS=1
+    restart: always

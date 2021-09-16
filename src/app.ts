@@ -30,6 +30,7 @@ server.ready((err) => {
   server.io.on("connection", (socket) => {
     socketController(socket);
   });
+  console.log(server.printRoutes());
 });
 
 process.on("uncaughtException", () => {

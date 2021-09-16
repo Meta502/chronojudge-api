@@ -6,5 +6,3 @@ const FASTIFY_PORT =
 app.listen(FASTIFY_PORT, "0.0.0.0");
 
 console.log(`🚀  Fastify server running on port ${FASTIFY_PORT}`);
-console.log(`Route index: /`);
-console.log(`Route code submit: /code/submit`);
