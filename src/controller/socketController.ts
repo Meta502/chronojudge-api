@@ -1,4 +1,5 @@
 import osUtils from "node-os-utils";
+import os from "os";
 import { Socket } from "socket.io";
 
 const socketController = (socket: Socket) => {
@@ -10,12 +11,14 @@ const socketController = (socket: Socket) => {
         socket.emit("status", {
           status: "Alive",
           cpuUsage: cpuUsage,
+          server: os.hostname(),
         });
         break;
       case false:
         socket.emit("status", {
           status: "High Load",
           cpuUsage: cpuUsage,
+          server: os.hostname(),
         });
         break;
     }
