@@ -11,14 +11,14 @@ const socketController = (socket: Socket) => {
         socket.emit("status", {
           status: "Alive",
           cpuUsage: cpuUsage,
-          server: os.hostname(),
+          server: process.env.SERVER_NAME,
         });
         break;
       case false:
         socket.emit("status", {
           status: "High Load",
           cpuUsage: cpuUsage,
-          server: os.hostname(),
+          server: process.env.SERVER_NAME,
         });
         break;
     }
