@@ -1,5 +1,4 @@
 import osUtils from "node-os-utils";
-import os from "os";
 import { Socket } from "socket.io";
 
 const socketController = (socket: Socket) => {
