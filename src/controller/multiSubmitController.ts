@@ -22,6 +22,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       _request: FastifyRequest<{ Body: SubmissionBody }>,
       reply: FastifyReply
     ) {
+      console.log(JSON.stringify(_request.body));
       // @ts-ignore
       const { code, input, output, timeLimit } = _request.body;
 

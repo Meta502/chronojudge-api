@@ -6,6 +6,7 @@ import socketio from "fastify-socket.io";
 
 import dotenv from "dotenv";
 import socketController from "./controller/socketController";
+import { ungzip } from "pako";
 
 dotenv.config();
 
@@ -24,6 +25,22 @@ server.register(socketio, {
     origin: "*",
   },
 });
+
+server.addContentTypeParser(
+  "application/json",
+  { parseAs: "buffer" },
+  function (req, body, done) {
+    if (
+      req.headers["content-encoding"] &&
+      req.headers["content-encoding"] === "gzip"
+    ) {
+      const decompressed = ungzip(body, { to: "string" });
+      done(null, JSON.parse(decompressed));
+    } else {
+      done(null, JSON.parse(body.toString("utf-8")));
+    }
+  }
+);
 
 server.ready((err) => {
   if (err) throw err;
