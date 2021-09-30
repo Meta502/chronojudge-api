@@ -62,9 +62,9 @@
   integrity sha512-sstDo2s8gQR/Qh2Bd6yNQ5xJv+D4ttyB9ZVjB3mBm3VkGl2RoqjV7fiw9mIHLbshHSRm2m8uf0XrIRQNWB/z6A==
 
 "@types/node@>=10.0.0", "@types/node@latest":
-  version "16.9.1"
-  resolved "https://registry.npmjs.org/@types/node/-/node-16.9.1.tgz"
-  integrity sha512-QpLcX9ZSsq3YYUUnD3nFDY8H7wctAhQj/TFKL8Ya8v5fMm3CFXxo8zStsLAl780ltoYoo1WvKUVGBQK+1ifr7g==
+  version "16.10.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.10.2.tgz#5764ca9aa94470adb4e1185fe2e9f19458992b2e"
+  integrity sha512-zCclL4/rx+W5SQTzFs9wyvvyCwoK9QtBpratqz2IYJ3O8Umrn0m3nsTv0wQBk9sRGpvUe9CwPDrQFB10f1FIjQ==
 
 "@types/pako@^1.0.2":
   version "1.0.2"
