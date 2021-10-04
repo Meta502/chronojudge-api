@@ -4,7 +4,8 @@ const runCode = async (
   filePath: string,
   randomId: string,
   input: string,
-  timeLimit: number
+  timeLimit: number,
+  setFlag: () => void = () => undefined
 ) => {
   const child = spawn(
     `java`,
@@ -17,6 +18,7 @@ const runCode = async (
 
   const timeout = setTimeout(() => {
     child.kill();
+    setFlag();
   }, timeLimit);
 
   child?.on("error", (err) => {
