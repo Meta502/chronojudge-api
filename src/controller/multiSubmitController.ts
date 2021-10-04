@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import findRemoveSync from "find-remove";
+import fs from "fs";
+import path from "path";
 import compileCode from "../helpers/compileCode";
 import precompileCheck from "../helpers/precompilationCheck";
 
@@ -74,7 +75,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
         }
       });
       reply.send(results);
-      findRemoveSync("temp", { prefix: randomId });
+      fs.rmSync(path.resolve(`temp/${randomId}`), { recursive: true });
     }
   );
 }

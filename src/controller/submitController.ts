@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import findRemoveSync from "find-remove";
+import fs from "fs";
+import path from "path";
 
 import runCode from "../helpers/runCode";
 import removeTrailing from "../helpers/removeTrailing";
@@ -43,7 +44,7 @@ export default async function submitController(fastify: FastifyInstance) {
       } else {
         reply.status(200).send({ message: "WA", output: codeOutput });
       }
-      findRemoveSync("temp", { prefix: randomId });
+      fs.rmSync(path.resolve(`temp/${randomId}`), { recursive: true });
     }
   );
 }

@@ -11,12 +11,13 @@ const processCode = (code: string) => {
   )();
 
   const processedCode = renameClass(code, randomId);
-
   const filePath = path.resolve("temp");
 
-  fs.writeFileSync(`${filePath}/${randomId}.java`, processedCode);
+  fs.mkdirSync(`${filePath}/${randomId}`);
 
-  return { filePath, randomId };
+  fs.writeFileSync(`${filePath}/${randomId}/${randomId}.java`, processedCode);
+
+  return { filePath: `${filePath}/${randomId}/`, randomId };
 };
 
 export default processCode;
