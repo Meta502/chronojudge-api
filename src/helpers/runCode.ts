@@ -8,11 +8,12 @@ const runCode = async (
   setFlag: () => void = () => undefined
 ) => {
   const child = spawn(
-    `java`,
-    ["-XX:ActiveProcessorCount=1", "-cp", `${filePath}`, `${randomId}`],
+    `(TIMEFORMAT="etime: %U"; time java`,
+    ["-XX:ActiveProcessorCount=1", "-cp", `${filePath}`, `${randomId})`],
     {
       encoding: "utf-8",
-      maxBuffer: 512000,
+      maxBuffer: 1024000,
+      shell: "/bin/bash",
     }
   );
 

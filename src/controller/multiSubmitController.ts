@@ -15,6 +15,8 @@ export interface SubmissionBody {
   timeLimit: number;
 }
 
+const timePattern = /.*(\betime: \b).*/;
+
 export default async function multiSubmitController(fastify: FastifyInstance) {
   // GET /
   fastify.post(
@@ -66,25 +68,34 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
           output: strippedOutput,
         };
 
-        if (item?.stderr) {
+        let errors = item?.stderr;
+
+        const time = errors.match(timePattern)?.[0]?.split(" ")?.[1];
+        errors = errors?.replace(timePattern, "")?.trim();
+
+        if (errors !== "") {
           return {
             message: "RTE",
             output: defaultOutput,
+            time,
           };
         } else if (item?.code === 143) {
           return {
             message: "TLE (website might be overloaded)",
             output: defaultOutput,
+            time,
           };
         } else if (removeTrailing(String(item?.stdout)) === strippedOutput) {
           return {
             message: "AC",
             output: defaultOutput,
+            time,
           };
         } else {
           return {
             message: "WA",
             output: defaultOutput,
+            time,
           };
         }
       });

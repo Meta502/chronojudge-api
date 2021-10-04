@@ -14,6 +14,8 @@ export interface SubmissionBody {
   output: string;
 }
 
+const timePattern = /.*(\betime: \b).*/;
+
 export default async function submitController(fastify: FastifyInstance) {
   // GET /
   fastify.post(
@@ -36,13 +38,16 @@ export default async function submitController(fastify: FastifyInstance) {
       }
 
       const codeOutput = await runCode(filePath, randomId, input, 2000);
+      let errors = codeOutput?.stderr;
+
+      const time = errors.match(timePattern)?.[0]?.split(" ")?.[1];
 
       if (removeTrailing(codeOutput.stdout) === removeTrailing(output)) {
-        reply.status(200).send({ message: "AC", output: codeOutput });
+        reply.status(200).send({ message: "AC", output: codeOutput, time });
       } else if (codeOutput.stdout === "" && codeOutput.stderr == "") {
-        reply.status(200).send({ message: "TLE", output: codeOutput });
+        reply.status(200).send({ message: "TLE", output: codeOutput, time });
       } else {
-        reply.status(200).send({ message: "WA", output: codeOutput });
+        reply.status(200).send({ message: "WA", output: codeOutput, time });
       }
       fs.rmSync(path.resolve(`temp/${randomId}`), { recursive: true });
     }
