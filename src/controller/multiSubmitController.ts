@@ -39,7 +39,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       const outputs = [];
 
       for (const inp of input) {
-        const output = await runCode(filePath, randomId, inp, 25000);
+        const output = await runCode(filePath, randomId, inp, 5000);
         outputs.push(output);
       }
 
