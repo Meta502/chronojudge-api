@@ -19,6 +19,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
   // GET /
   fastify.post(
     "/code/multi",
+    // @ts-ignore
     async function (
       _request: FastifyRequest<{ Body: SubmissionBody }>,
       reply: FastifyReply
@@ -43,13 +44,17 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
         const setFlag = () => (flag = true);
         const output = await runCode(filePath, randomId, inp, 7500, setFlag);
         if (flag) {
-          return [
-            {
-              message: "TLE (program killed to prevent overloading)",
-            },
-          ];
+          break;
         }
         outputs.push(output);
+      }
+
+      if (flag) {
+        return [
+          {
+            message: "TLE (program killed to prevent overloading)",
+          },
+        ];
       }
 
       const results = outputs.map((item, index: number) => {
