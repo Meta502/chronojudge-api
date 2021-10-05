@@ -5,11 +5,30 @@ export function renameClassUtil(
   targetSubstring: string
 ) {
   let newCode = "";
+  let oldClassName = "";
   for (let i = 0; i < code.length; ++i) {
     if (code.substring(i, targetSubstring.length + i) === targetSubstring) {
       let beforeCode = code.slice(0, i);
+
       let tempCode = code.slice(i, code.length);
+
+      oldClassName = String(
+        tempCode.substring(0, tempCode.search("{")).trim().split(" ").pop()
+      );
+
       let afterCode = tempCode.slice(tempCode.search("{"), tempCode.length);
+      for (let j = 0; j < beforeCode.length; j++) {
+        if (beforeCode.substring(j, oldClassName.length + j) === oldClassName) {
+          let beforeName = beforeCode.slice(0, j);
+          let afterName = beforeCode.slice(
+            oldClassName.length + j,
+            beforeCode.length
+          );
+          beforeCode = beforeName + newClassName + afterName;
+          continue;
+        }
+      }
+
       newCode = beforeCode + targetSubstring + newClassName + " " + afterCode;
       break;
     }
