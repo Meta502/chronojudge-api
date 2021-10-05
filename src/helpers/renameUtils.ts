@@ -17,6 +17,7 @@ export function renameClassUtil(
       );
 
       let afterCode = tempCode.slice(tempCode.search("{"), tempCode.length);
+
       for (let j = 0; j < beforeCode.length; j++) {
         if (beforeCode.substring(j, oldClassName.length + j) === oldClassName) {
           let beforeName = beforeCode.slice(0, j);
@@ -25,6 +26,18 @@ export function renameClassUtil(
             beforeCode.length
           );
           beforeCode = beforeName + newClassName + afterName;
+          continue;
+        }
+      }
+
+      for (let j = 0; j < afterCode.length; j++) {
+        if (afterCode.substring(j, oldClassName.length + j) === oldClassName) {
+          let beforeName = afterCode.slice(0, j);
+          let afterName = afterCode.slice(
+            oldClassName.length + j,
+            afterCode.length
+          );
+          afterCode = beforeName + newClassName + afterName;
           continue;
         }
       }
