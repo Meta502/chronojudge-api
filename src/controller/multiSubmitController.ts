@@ -54,7 +54,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       if (flag) {
         return [
           {
-            message: "TLE (program killed to prevent overloading)",
+            message: "TLE (program killed, potential infinite loop)",
           },
         ];
       }

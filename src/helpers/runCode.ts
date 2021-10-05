@@ -8,8 +8,8 @@ const runCode = async (
   setFlag: () => void = () => undefined
 ) => {
   const child = spawn(
-    `(TIMEFORMAT="etime: %U"; time java`,
-    ["-XX:ActiveProcessorCount=1", "-cp", `${filePath}`, `${randomId})`],
+    `(timeout 10s bash -c 'TIMEFORMAT="etime: %U"; time java`,
+    ["-XX:ActiveProcessorCount=1", "-cp", `${filePath}`, `${randomId}')`],
     {
       encoding: "utf-8",
       maxBuffer: 1024000,
