@@ -1,4 +1,5 @@
 import { spawn } from "promisify-child-process";
+import stringToStream from "string-to-stream";
 
 const runCode = async (
   filePath: string,
@@ -12,7 +13,7 @@ const runCode = async (
     ["-XX:ActiveProcessorCount=1", "-cp", `${filePath}`, `${randomId}')`],
     {
       encoding: "utf-8",
-      maxBuffer: 1024000,
+      maxBuffer: 32768000,
       shell: "/bin/bash",
     }
   );
@@ -26,8 +27,10 @@ const runCode = async (
     console.error(err);
   });
 
-  child?.stdin?.write(input);
-  child?.stdin?.end();
+  child?.on("spawn", () => {
+    // @ts-ignore
+    stringToStream(input).pipe(child.stdin, { end: true });
+  });
 
   child?.on("close", () => {
     clearTimeout(timeout);
