@@ -54,7 +54,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       if (flag) {
         return [
           {
-            message: "TLE (program killed, potential infinite loop)",
+            message: "Program killed, potential infinite loop (Run Time >10s)",
           },
         ];
       }
@@ -79,15 +79,23 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
             output: defaultOutput,
             time,
           };
-        } else if (item?.code === 143) {
+        } else if (removeTrailing(String(item?.stdout)) === strippedOutput) {
+          if (Number(time) * 1000 > timeLimit) {
+            return {
+              message: "AC w/ TLE",
+              output: defaultOutput,
+              time,
+            };
+          }
+
           return {
-            message: "TLE (website might be overloaded)",
+            message: "AC",
             output: defaultOutput,
             time,
           };
-        } else if (removeTrailing(String(item?.stdout)) === strippedOutput) {
+        } else if (Number(time) * 1000 > timeLimit) {
           return {
-            message: "AC",
+            message: "WA w/ TLE",
             output: defaultOutput,
             time,
           };
