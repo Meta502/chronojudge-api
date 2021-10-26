@@ -681,10 +681,10 @@ find-my-way@^4.1.0:
     safe-regex2 "^2.0.0"
     semver-store "^0.3.0"
 
-find-remove@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/find-remove/-/find-remove-3.1.0.tgz"
-  integrity sha512-F4DAR/JnsadDA9KZRWLZXNZjaQ9X6KJ1OcHFz1cXq4OCm1v2hxu7+hbgxIaqUzU3dzYNP5npJ/dQzaR6pEf3EQ==
+find-remove@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/find-remove/-/find-remove-4.0.0.tgz#d958007938404343139e5cd596e64d0c9b09b23b"
+  integrity sha512-3PkqMPZVT7FI3xYq3y2VaQhY/ScrnUnQYtGOIuVKk8Sicbn5Ay5POq9LTIcp7KpJewzJs9GEZm98q67qb1tZxQ==
   dependencies:
     fmerge "1.2.0"
     rimraf "3.0.2"
