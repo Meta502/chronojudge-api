@@ -27,7 +27,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       reply: FastifyReply
     ) {
       // @ts-ignore
-      const { code, input, output, timeLimit } = _request.body;
+      const { code, input, output, timeLimit, id } = _request.body;
 
       if (!precompileCheck(code, reply, true)) {
         return;
@@ -54,6 +54,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
         );
         fastify.io.emit("progress", {
           case: index,
+          id,
         });
         if (flag) {
           break;
