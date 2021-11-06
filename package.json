@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/socket.io": "^3.0.2",
+    "bee-queue": "^1.4.0",
     "compile-run": "^2.3.4",
     "cross-env": "^7.0.3",
     "diff": "^5.0.0",

@@ -14,3 +14,6 @@ services:
     environment:
       - COMPOSE_CONVERT_WINDOWS_PATHS=1
     restart: always
+  redis-backend:
+    container_name: redis-backend
+    image: "redis:alpine"

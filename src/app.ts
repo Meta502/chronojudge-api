@@ -50,8 +50,9 @@ server.ready((err) => {
   console.log(server.printRoutes());
 });
 
-process.on("uncaughtException", () => {
+process.on("uncaughtException", (err) => {
   console.error("A Java exception might have occurred.");
+  console.error(err);
 });
 
 export default server;
