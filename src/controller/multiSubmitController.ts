@@ -55,8 +55,9 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
         if (flag) {
           break;
         }
-        fastify.io.to(id).emit("progress", {
+        fastify.io.emit("progress", {
           case: index,
+          id,
         });
         index++;
         outputs.push(output);
