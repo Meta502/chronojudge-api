@@ -6,7 +6,7 @@ import precompileCheck from "../helpers/precompilationCheck";
 
 import processCode from "../helpers/processCode";
 import removeTrailing from "../helpers/removeTrailing";
-import runJob from "../helpers/queue";
+import runCode from "../helpers/runCode";
 
 export interface SubmissionBody {
   code: string;
@@ -45,7 +45,7 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
 
       for (const inp of input) {
         const setFlag = () => (flag = true);
-        const output: any = await runJob(
+        const output: any = await runCode(
           filePath,
           randomId,
           inp,
