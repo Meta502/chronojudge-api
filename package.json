@@ -36,7 +36,7 @@
     "@types/node-os-utils": "^1.2.0",
     "@types/pako": "^1.0.2",
     "fastify-tsconfig": "^1.0.1",
-    "nodemon": "^2.0.14",
+    "nodemon": "^2.0.15",
     "prettier": "^2.4.0",
     "rimraf": "^3.0.2",
     "tsconfig-paths": "^3.11.0",
