@@ -68,7 +68,9 @@ export default async function multiSubmitController(fastify: FastifyInstance) {
       if (flag) {
         return [
           {
-            message: "Program killed, potential infinite loop (Run Time >10s)",
+            message: `Program killed, potential infinite loop (Run Time >10s), TC: ${
+              index + 1
+            }`,
           },
         ];
       }
